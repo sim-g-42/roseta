@@ -12,30 +12,40 @@
 
 #include "../include/roseta.h"
 
+void	freeall(char **strs, int *num)
+{
+	int	i;
+
+	i = 0;
+	while (strs && strs[i])
+	{
+		free(strs[i]);
+		i++;
+	}
+	free(strs);
+	free(num);
+}
+
 int	main(int argc, char *argv[])
 {
 	char	**strs;
 	int		*num;
-	int		i;
+	int		st;
 
-	i = 0;
-	if (parse(argc, argv, &strs, &num))
+	strs = NULL;
+	num = NULL;
+	st = parse(argc, argv, &strs, &num);
+	if (st != 0)
 	{
-		printf("Error");
+		if (st == -2)
+			ft_putstr("Dict Error\n");
+		else
+			ft_putstr("Error\n");
+		freeall(strs, num);
 		return (1);
 	}
-	while (strs[i])
-	{
-		printf("string %d : %s\n", i, strs[i]);
-		i++;
-	}
-	i = 0;
-	while (num[i] != -1)
-	{
-		printf("%d", num[i]);
-		i++;
-	}
-	printf("main\n");
-	convert(strs, num);
+	if (convert(strs, num))
+		ft_putstr("Dict Error\n");
+	freeall(strs, num);
 	return (0);
 }

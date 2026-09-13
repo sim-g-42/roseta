@@ -59,25 +59,43 @@ int	counttosep(char *str, char *sep)
 	return (i2);
 }
 
+char	*copytoken(char *str, int len)
+{
+	char	*out;
+	int		i;
+
+	out = malloc(sizeof(char) * (len + 1));
+	i = 0;
+	while (i < len)
+	{
+		out[i] = str[i];
+		i++;
+	}
+	out[i] = '\0';
+	return (out);
+}
+
 void	ft_split2(char *str, char *sep, char **strs, int i[5])
 {
 	i[1] = counttosep(str, sep);
 	if (!i[1])
 	{
+		if (!str[0])
+		{
+			strs[i[0]] = NULL;
+			return ;
+		}
 		str++;
 		return (ft_split2(str, sep, strs, i));
 	}
-	strs[i[0]] = malloc(sizeof(char) * (i[1] + 1));
-	i[2] = 0;
-	while (i[2] < i[1])
-	{
-		strs[i[0]][i[2]] = str[0];
-		i[2]++;
-		str++;
-	}
+	strs[i[0]] = copytoken(str, i[1]);
+	str += i[1];
 	i[0]++;
-	if (i[0] >= i[3])
+	if (!str[0])
+	{
+		strs[i[0]] = NULL;
 		return ;
+	}
 	ft_split2(str, sep, strs, i);
 }
 
@@ -89,7 +107,6 @@ char	**ft_split(char *str, char *sep)
 	i[0] = 0;
 	i[3] = sepcount(str, sep);
 	strs = malloc(sizeof(strs) * (i[3] + 2));
-	strs[i[3] + 2] = NULL;
 	ft_split2(str, sep, strs, i);
 	return (strs);
 }

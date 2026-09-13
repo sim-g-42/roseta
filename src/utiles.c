@@ -21,12 +21,9 @@ int	ft_atoi(char *str)
 	n = 0;
 	while (str[i])
 	{
-		if (str[i] >= 48 && str[i] <= 57)
-		{
-			n += str[i] - 48;
-			if (str[i + 1])
-				n *= 10;
-		}
+		if (str[i] < '0' || str[i] > '9')
+			return (-1);
+		n = n * 10 + (str[i] - '0');
 		i++;
 	}
 	return (n);
@@ -44,6 +41,19 @@ int	ft_strlen(char *str)
 	return (i);
 }
 
+void	ft_putstr(char *str)
+{
+	if (!str)
+		return ;
+	write(1, str, ft_strlen(str));
+}
+
+void	ft_putword(char *word, char *after)
+{
+	ft_putstr(word);
+	ft_putstr(after);
+}
+
 int	*ft_atonum(char *str)
 {
 	int	*num;
@@ -55,11 +65,13 @@ int	*ft_atonum(char *str)
 	num = malloc(sizeof(int) * (ft_strlen(str) + 200));
 	while (str[i])
 	{
-		if (str[i] >= 48 && str[i] <= 57)
+		if (str[i] < '0' || str[i] > '9')
 		{
-			num[i2] = str[i] - 48;
-			i2++;
+			num[0] = -1;
+			return (num);
 		}
+		num[i2] = str[i] - '0';
+		i2++;
 		i++;
 	}
 	num[i2] = -1;

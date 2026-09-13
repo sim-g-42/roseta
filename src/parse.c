@@ -15,15 +15,24 @@
 char	**readdict(char *dict)
 {
 	char	**strs;
-	char	*sep;
+	char	**lines;
 	char	*c;
-	int		sz;
+	int		fd;
+	int		n;
 
-	sep = malloc(sizeof(char) * 4);
-	sep = " :\n";
-	c = (char *)malloc(sizeof(char) * 691);
-	c[read(open(dict, O_RDONLY), c, 691)] = '\0';
-	strs = ft_split(c, sep);
+	fd = open(dict, O_RDONLY);
+	if (fd == -1)
+		return (NULL);
+	c = malloc(65536);
+	n = read(fd, c, 65535);
+	if (n < 0)
+		n = 0;
+	c[n] = '\0';
+	close(fd);
+	lines = ft_split(c, "\n");
+	free(c);
+	strs = linestokeys(lines);
+	freetokens(lines);
 	return (strs);
 }
 
@@ -34,15 +43,19 @@ int	getarg(int argc, char *argv[], int **num, char **dict)
 		return (-1);
 	}
 	if (argc == 2)
+	{
 		*num = ft_atonum(argv[1]);
+		if ((*num)[0] == -1)
+			return (-1);
+	}
 	else if (argc == 3)
 	{
 		*num = ft_atonum(argv[2]);
-		*dict = malloc(sizeof(char) * (ft_strlen(argv[1]) + 1));
+		if ((*num)[0] == -1)
+			return (-1);
 		*dict = argv[1];
 		return (0);
 	}
-	*dict = malloc(sizeof(char) * (ft_strlen("numbers.dict")));
 	*dict = "numbers.dict";
 	return (0);
 }
@@ -54,5 +67,7 @@ int	parse(int argc, char *argv[], char ***strs, int **num)
 	if (getarg(argc, argv, num, &dict) == -1)
 		return (-1);
 	*strs = readdict(dict);
+	if (*strs == NULL)
+		return (-2);
 	return (0);
 }
